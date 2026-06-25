@@ -1,0 +1,6 @@
+{
+  "name": "Super Tuition Manager",
+  "description": "Premium Material 3 tuition management system with student/teacher dashboard, attendance, fee logs, schedules, and AI insights.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
