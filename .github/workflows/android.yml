@@ -29,12 +29,14 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=mock_key_for_ci" > .env
 
-    - name: Grant Execute Permissions for Gradlew
-      run: chmod +x gradlew
+    - name: Fix Line Endings and Grant Execute Permissions
+      run: |
+        sed -i 's/\r$//' gradlew
+        chmod +x gradlew
 
     - name: Decode Debug Keystore
       run: |
-        base64 -d debug.keystore.base64 > debug.keystore || base64 --decode debug.keystore.base64 > debug.keystore
+        python3 -c "import base64; data = open('debug.keystore.base64', 'rb').read().replace(b'\r', b'').replace(b'\n', b'').replace(b' ', b''); open('debug.keystore', 'wb').write(base64.b64decode(data))"
 
     - name: Build Debug APK
       run: bash gradlew assembleDebug
