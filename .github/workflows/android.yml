@@ -31,9 +31,19 @@ jobs:
         sed -i 's/\r$//' gradlew
         chmod +x gradlew
 
-    - name: Generate Debug Keystore
+    - name: Accept Android SDK Licenses
       run: |
-        keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        yes | sdkmanager --licenses || true
+
+    - name: Set up Debug Keystore
+      run: |
+        if [ -f debug.keystore.base64 ]; then
+          echo "Decoding debug.keystore.base64..."
+          python3 -c "import base64; data = open('debug.keystore.base64', 'rb').read().replace(b'\r', b'').replace(b'\n', b'').replace(b' ', b''); open('debug.keystore', 'wb').write(base64.b64decode(data))"
+        else
+          echo "debug.keystore.base64 not found, generating a new debug keystore..."
+          keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        fi
 
     - name: Build Debug APK
       run: ./gradlew assembleDebug --no-daemon --stacktrace
